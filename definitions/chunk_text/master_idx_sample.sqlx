@@ -3,7 +3,7 @@ config {
 }
 
 js {
-  const dataset_id = dataform.projectConfig.defaultDataset;
+  const dataset_id = dataform.projectConfig.defaultSchema;
 }
 -- 
 -- randomly select a small portion of 485BPOS filings for testing
@@ -33,6 +33,7 @@ SELECT
 FROM (
   SELECT DISTINCT cik || '|' || filename AS param
   FROM `${dataset_id}.master_idx_sample`
+  LIMIT 1
 )  
 
 }

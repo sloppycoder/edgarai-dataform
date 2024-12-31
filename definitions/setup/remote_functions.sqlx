@@ -3,11 +3,11 @@ config {
 }
 
 js {
-  const project_id = dataform.projectConfig.defaultProject
-  const dataset_id = dataform.projectConfig.defaultDataset
+  const project_id = dataform.projectConfig.defaultDatabase
+  const dataset_id = dataform.projectConfig.defaultSchema;
   const region = dataform.projectConfig.defaultLocation
   const func_connection = dataform.projectConfig.vars.cloud_func_connection
-  const vertexai_connection = dataform.projectConfig.vertexai_connection
+  const vertexai_connection = dataform.projectConfig.vars.vertexai_connection
 }
 
 pre_operations {
@@ -52,3 +52,13 @@ OPTIONS(endpoint = 'gemini-2.0-flash-exp');
 
 }
 
+SELECT `edgar`.trigger_processor('load_master_idx', param) AS trigger_output
+FROM UNNEST([
+  -- '2020|1', '2020|2', '2020|3', '2020|4',
+  -- '2021|1', '2021|2', '2021|3', '2021|4',
+  -- '2022|1', '2022|2', '2022|3', '2022|4',
+  -- '2023|1', '2023|2', '2023|3', '2023|4',
+  '2024|1', '2024|2', '2024|3', '2024|4'
+]) AS param
+
+-- SELECT `edgar`.trigger_processor('chunk_one_filing', '1002427|edgar/data/1002427/0001133228-24-004879.txt')

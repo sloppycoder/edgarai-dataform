@@ -3,13 +3,14 @@ config {
 }
 
 js {
-  const dataset_id = dataform.projectConfig.defaultDataset;
+  const dataset_id = dataform.projectConfig.defaultSchema;
 }
 
+-- create table before creating the view
 pre_operations {
 
 -- REQUIRED by pub/sub to store messages
-CREATE OR REPLACE TABLE `common.topic_edgarai_response`
+CREATE TABLE IF NOT EXISTS `common.topic_edgarai_response`
 (
   subscription_name STRING,
   message_id STRING,
@@ -20,8 +21,6 @@ CREATE OR REPLACE TABLE `common.topic_edgarai_response`
 
 }
 
--- CREATE view for checking the response messages
-CREATE OR REPLACE VIEW `${dataset_id}.processor_responses` AS
 SELECT 
   response.*,
   JSON_EXTRACT(data, '$.message') AS message,
@@ -29,4 +28,4 @@ SELECT
   REGEXP_EXTRACT(JSON_EXTRACT(data, '$.message'), r'saved for ([0-9]+)') AS cik,
   REGEXP_EXTRACT(JSON_EXTRACT(data, '$.message'), r'edgar.*txt') AS filename,
   REGEXP_EXTRACT(JSON_EXTRACT(data, '$.message'), r'^"([0-9]+)') AS n_chunks
-FROM `common.topic_edgarai_response`
+FROM `common.topic_edgarai_response` response
