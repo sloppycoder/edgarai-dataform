@@ -1,5 +1,9 @@
 defaultProject: edgar-ai
-defaultLocation: US
-defaultDataset: dataform
+defaultLocation: us-central1
+defaultDataset: edgar
 defaultAssertionDataset: dataform_assertions
 dataformCoreVersion: 3.0.0
+vars:
+  embedding_dimensionality: "768"
+  cloud_func_connection: us-central1.cloud-funcs
+  vertexai_connection: us-central1.ai1

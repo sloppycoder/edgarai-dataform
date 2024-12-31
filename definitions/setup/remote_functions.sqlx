@@ -1,0 +1,54 @@
+config {
+  type: "view",
+}
+
+js {
+  const project_id = dataform.projectConfig.defaultProject
+  const dataset_id = dataform.projectConfig.defaultDataset
+  const region = dataform.projectConfig.defaultLocation
+  const func_connection = dataform.projectConfig.vars.cloud_func_connection
+  const vertexai_connection = dataform.projectConfig.vertexai_connection
+}
+
+pre_operations {
+
+-- CREATE linkage to remove functions that process EDGAR index and filings. See repo below for details
+--
+-- https://github.com/sloppycoder/edgarai
+--
+
+-- DEFINE remote function to trigger edgar_processor
+CREATE OR REPLACE FUNCTION `${dataset_id}`.trigger_processor(func_name STRING, params STRING) RETURNS STRING
+REMOTE WITH CONNECTION `${func_connection}`
+OPTIONS (
+  endpoint = 'https://${region}-${project_id}.cloudfunctions.net/trigger_processor'
+)
+;
+
+-- DEFINE remote function for getting most relevant chunk numbers of a filing
+CREATE OR REPLACE FUNCTION `${dataset_id}`.get_most_relevant_chunks(cik STRING, accession_number STRING, dimensionality INT64) 
+RETURNS STRING
+REMOTE WITH CONNECTION `${func_connection}`
+OPTIONS (
+  endpoint = 'https://${region}-${project_id}.cloudfunctions.net/get_most_relevant_chunks'
+);
+
+
+CREATE OR REPLACE MODEL `${dataset_id}.text-embedding`
+REMOTE WITH CONNECTION `${vertexai_connection}`
+OPTIONS(endpoint = 'text-embedding-005');
+
+CREATE OR REPLACE MODEL `${dataset_id}.gemini-flash-15`
+REMOTE WITH CONNECTION `${vertexai_connection}`
+OPTIONS(endpoint = 'gemini-1.5-flash-002');
+
+CREATE OR REPLACE MODEL `${dataset_id}.gemini-pro-15`
+REMOTE WITH CONNECTION `${vertexai_connection}`
+OPTIONS(endpoint = 'gemini-1.5-pro-002');
+
+CREATE OR REPLACE MODEL `${dataset_id}.gemini-flash-exp`
+REMOTE WITH CONNECTION `${vertexai_connection}`
+OPTIONS(endpoint = 'gemini-2.0-flash-exp');
+
+}
+

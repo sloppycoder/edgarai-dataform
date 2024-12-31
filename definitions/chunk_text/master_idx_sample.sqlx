@@ -1,0 +1,38 @@
+config {
+    type: "table",
+}
+
+js {
+  const dataset_id = dataform.projectConfig.defaultDataset;
+}
+-- 
+-- randomly select a small portion of 485BPOS filings for testing
+--
+WITH selected_cik AS (
+  SELECT DISTINCT cik
+  FROM `${dataset_id}.master_idx`
+  WHERE form_type = '485BPOS'
+    AND date_filed BETWEEN '2024-01-01' AND '2024-12-31'
+  ORDER BY RAND()
+  LIMIT 10
+)
+
+SELECT * 
+FROM `${dataset_id}.master_idx`
+WHERE form_type = '485BPOS'
+  AND date_filed BETWEEN '2024-01-01' AND '2024-12-31' 
+  AND cik IN (
+    SELECT cik 
+    FROM selected_cik
+  )
+
+post_operations {
+
+SELECT 
+  edgar.trigger_processor('chunk_one_filing', param) AS status_message
+FROM (
+  SELECT DISTINCT cik || '|' || filename AS param
+  FROM `${dataset_id}.master_idx_sample`
+)  
+
+}
