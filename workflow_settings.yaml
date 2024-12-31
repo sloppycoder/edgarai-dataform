@@ -8,7 +8,7 @@ vars:
   cloud_func_connection: us-central1.cloud-funcs
   vertexai_connection: us-central1.ai1
   # num of companies to sample
-  cik_samples: 10
+  cik_samples: "10"
   # number of filings to chunk, set to large number
   # in order to chunk all filings from the sampled companies
-  chunk_filings: 2
+  chunk_filings: "2"
