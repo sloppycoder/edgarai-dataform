@@ -1,6 +1,6 @@
 defaultProject: edgar-ai
 defaultLocation: us-central1
-defaultDataset: edgar
+defaultDataset: edgar2
 defaultAssertionDataset: dataform_assertions
 dataformCoreVersion: 3.0.0
 vars:

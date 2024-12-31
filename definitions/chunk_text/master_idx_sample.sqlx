@@ -29,7 +29,7 @@ WHERE form_type = '485BPOS'
 post_operations {
 
 SELECT 
-  edgar.trigger_processor('chunk_one_filing', param) AS status_message
+  edgar.trigger_processor('chunk_one_filing', '${dataset_id}', param) AS status_message
 FROM (
   SELECT DISTINCT cik || '|' || filename AS param
   FROM `${dataset_id}.master_idx_sample`
