@@ -11,4 +11,4 @@ vars:
   cik_samples: "10"
   # number of filings to chunk, set to large number
   # in order to chunk all filings from the sampled companies
-  chunk_filings: "2"
+  num_of_filings_to_chunk: "2"

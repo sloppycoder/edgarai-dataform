@@ -1,0 +1,37 @@
+config {
+  type: "table",
+}
+
+js {
+  const dataset_id = dataform.projectConfig.defaultSchema;
+}
+
+WITH filing_list AS (
+  SELECT distinct cik, accession_number
+  FROM ${ref("filing_text_chunks_embedding")}
+  limit 2 -- TODO: remove after debugging
+),
+
+-- Step 1: Call the remote function that returns a JSON string (list of integers)
+most_relevant_chunks_output AS (
+  SELECT
+    cik,
+    accession_number,
+    JSON_EXTRACT_ARRAY(
+      `${dataset_id}`.get_most_relevant_chunks('${dataset_id}',
+      cik, accession_number)
+      ) AS numbers_json
+  FROM filing_list
+)
+
+-- Step 2: Filter filing_chunked_texts for each cik and accession_number combined the text chunks
+  SELECT 
+    r.cik,
+    r.accession_number,
+    STRING_AGG(f.content, ' ') AS relevant_text,
+  FROM most_relevant_chunks_output r
+  JOIN ${ref("filing_text_chunks_embedding")} f
+    ON f.cik = r.cik
+    AND f.accession_number = r.accession_number
+    AND f.chunk_num IN UNNEST(ARRAY(SELECT CAST(value AS INT64) FROM UNNEST(r.numbers_json) AS value))
+  GROUP BY r.cik, r.accession_number

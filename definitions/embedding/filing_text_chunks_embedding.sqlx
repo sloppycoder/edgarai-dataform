@@ -1,0 +1,25 @@
+config {
+    type: "table",
+    dependencies: ["search_phrase"]
+}
+
+js {
+  const dataset_id = dataform.projectConfig.defaultSchema;
+  const dimension = dataform.projectConfig.vars.embedding_dimensionality;
+}
+
+SELECT 
+  *,
+  'text-embedding-005/768/round1' AS tags
+FROM ML.GENERATE_EMBEDDING (
+  MODEL  `${dataset_id}.text-embedding`,
+  (
+    SELECT cik, accession_number, chunk_num, content 
+    FROM `${dataset_id}.filing_text_chunks`
+  ),
+  STRUCT(
+    TRUE AS flatten_json_output,
+    ${dimension} AS output_dimensionality,
+    'RETRIEVAL_DOCUMENT' AS task_type
+  )
+)

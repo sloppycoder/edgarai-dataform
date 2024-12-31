@@ -1,0 +1,106 @@
+config {
+  type: "table",
+}
+
+js {
+  const dataset_id = dataform.projectConfig.defaultSchema;
+}
+
+DECLARE prompt STRING;
+
+SET prompt = '''
+You are tasked with extracting compensation information for Trustees from a snippet
+of an SEC filing 485BPOS. Here is the snippet you need to analyze:
+
+<sec_filing_snippet>
+{SEC_FILING_SNIPPET}
+</sec_filing_snippet>
+
+Your task is to extract the following information:
+1. Determine if compensation information for Trustees is present in the snippet.
+2. If present, extract the compensation details for each Trustee, including their name, job title, fund compensation, fund group compensation, and deferred compensation.
+3. Note any additional types of compensation mentioned in the document.
+
+Follow these steps to analyze the snippet:
+1. Carefully read through the entire snippet.
+2. Look for a table or section that contains compensation information for Trustees, Board Members, Board Directors, or Interested Persons.
+3. If you find such information, extract the relevant details for each Trustee.
+4. Pay attention to any footnotes or additional explanations related to the compensation.
+
+Structure your output as follows:
+1. A boolean field indicating whether compensation information is present in the snippet.
+2. A list of Trustees with their compensation details.
+3. A notes field for any additional information or explanations.
+
+If the compensation information is not present in the snippet:
+1. Set the boolean field to false.
+2. Leave the list of Trustees empty.
+3. In the notes field, explain that the compensation information was not found in the given snippet.
+
+If you find any additional relevant information or need to provide explanations about your analysis,
+include them in the notes field.
+
+Provide your output in JSON format, as showsn in example below
+
+{
+ "compensation_info_present": true/false,
+ "trustees": [
+  {
+   "year": "Year of Compensation",
+   "name": "name of the trustee or N/A",
+   "job_title": "the job title of the person who is a trustee. e.g. Commitee Chairperson",
+   "fund_compensation": "Amount or N/A",
+   "fund_group_compensation": "Amount or N/A",
+   "deferred_compensation": "Amount or N/A",
+   "other_compensation": {
+    "type": "Amount"
+   }
+  }
+ ],
+ "notes": "Any additional information or explanations"
+}
+''';
+
+
+WITH llm_output AS (
+SELECT
+  *,
+  0 AS n_trustees
+FROM
+  ML.GENERATE_TEXT(
+    MODEL `edgar2.gemini-flash-15`,
+    ( 
+      SELECT 
+        cik,
+        accession_number,
+        REPLACE(prompt,'{SEC_FILING_SNIPPET}',relevant_text) as prompt
+      FROM
+        ${ref("trustee_comp_prompt")}
+    ),
+    STRUCT(
+      4096 AS max_output_tokens, 
+      0 AS temperature,
+      TRUE AS flatten_json_output
+    )
+  )
+),
+
+llm_json_output AS 
+(
+  SELECT 
+    *,
+    REGEXP_REPLACE(
+        ml_generate_text_llm_result, 
+        r'(?s)```json\s*(\{.*?\})\s*```', '\\1'
+      ) as json_text
+  FROM llm_output
+)
+
+SELECT 
+  cik,
+  accession_number,
+  json_text,
+  JSON_EXTRACT(json_text ,'$.compensation_info_present') AS found,
+  ARRAY_LENGTH(JSON_EXTRACT_ARRAY(json_text ,'$.trustees')) AS n_trustee
+FROM llm_json_output
+

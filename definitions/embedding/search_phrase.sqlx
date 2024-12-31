@@ -1,0 +1,27 @@
+config {
+    type: "table",
+}
+
+js {
+  const dataset_id = dataform.projectConfig.defaultSchema;
+  const dimension = dataform.projectConfig.vars.embedding_dimensionality;
+}
+SELECT 
+  *
+FROM ML.GENERATE_EMBEDDING (
+  MODEL  `${dataset_id}.text-embedding`,
+  (
+    SELECT content 
+    FROM UNNEST([
+        'Trustee Compensation',
+        'Independent Director Compensation',
+        'Board Director Compensation',
+        'Interested Person Compensation'
+    ]) AS content
+  ),
+  STRUCT(
+    TRUE AS flatten_json_output,
+    ${dimension} AS output_dimensionality,
+    'RETRIEVAL_QUERY' AS task_type
+  )
+)

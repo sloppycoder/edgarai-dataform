@@ -1,5 +1,7 @@
 config {
-  type: "view",
+  type: "operations",
+   // not a true dependency, just make things easier during execution
+  dependencies:["processor_responses"]
 }
 
 js {
@@ -9,8 +11,6 @@ js {
   const func_connection = dataform.projectConfig.vars.cloud_func_connection
   const vertexai_connection = dataform.projectConfig.vars.vertexai_connection
 }
-
-pre_operations {
 
 -- CREATE linkage to remove functions that process EDGAR index and filings. See repo below for details
 --
@@ -26,7 +26,7 @@ OPTIONS (
 ;
 
 -- DEFINE remote function for getting most relevant chunk numbers of a filing
-CREATE OR REPLACE FUNCTION `${dataset_id}`.get_most_relevant_chunks(dataset_id STRING, cik STRING, accession_number STRING, dimensionality INT64) 
+CREATE OR REPLACE FUNCTION `${dataset_id}`.get_most_relevant_chunks(dataset_id STRING, cik STRING, accession_number STRING) 
 RETURNS STRING
 REMOTE WITH CONNECTION `${func_connection}`
 OPTIONS (
@@ -50,15 +50,4 @@ CREATE OR REPLACE MODEL `${dataset_id}.gemini-flash-exp`
 REMOTE WITH CONNECTION `${vertexai_connection}`
 OPTIONS(endpoint = 'gemini-2.0-flash-exp');
 
-}
 
-SELECT `${dataset_id}`.trigger_processor('load_master_idx', '${dataset_id}', param) AS trigger_output
-FROM UNNEST([
-  -- '2020|1', '2020|2', '2020|3', '2020|4',
-  -- '2021|1', '2021|2', '2021|3', '2021|4',
-  -- '2022|1', '2022|2', '2022|3', '2022|4',
-  -- '2023|1', '2023|2', '2023|3', '2023|4',
-  '2024|1', '2024|2', '2024|3', '2024|4'
-]) AS param
-
--- SELECT `edgar`.trigger_processor('chunk_one_filing', '1002427|edgar/data/1002427/0001133228-24-004879.txt')

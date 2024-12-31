@@ -1,0 +1,20 @@
+config {
+    type:"operations"
+}
+
+js {
+  const dataset_id = dataform.projectConfig.defaultSchema;
+  const num_of_filings_to_chunk = dataform.projectConfig.vars.num_of_filings_to_chunk;
+}
+
+SELECT
+  `${dataset_id}`.trigger_processor('chunk_one_filing', '${dataset_id}', param) AS status_message
+FROM (
+  SELECT DISTINCT cik || '|' || filename AS param
+  FROM ${ref("master_idx_sample")}
+  LIMIT ${num_of_filings_to_chunk}
+);
+
+js {
+    
+}
