@@ -1,7 +1,5 @@
 config {
   type: "operations",
-   // not a true dependency, just make things easier during execution
-  dependencies:["processor_responses"]
 }
 
 js {
@@ -12,16 +10,18 @@ js {
   const vertexai_connection = dataform.projectConfig.vars.vertexai_connection
 }
 
+CREATE SCHEMA IF NOT EXISTS `${dataset_id}`;
+
 -- CREATE linkage to remove functions that process EDGAR index and filings. See repo below for details
 --
 -- https://github.com/sloppycoder/edgarai
 --
 
 -- DEFINE remote function to trigger edgar_processor
-CREATE OR REPLACE FUNCTION `${dataset_id}`.trigger_processor(func_name STRING,dataset_id STRING, params STRING) RETURNS STRING
+CREATE OR REPLACE FUNCTION `${dataset_id}`.edgar_processor(func_name STRING,dataset_id STRING, params STRING) RETURNS STRING
 REMOTE WITH CONNECTION `${func_connection}`
 OPTIONS (
-  endpoint = 'https://${region}-${project_id}.cloudfunctions.net/trigger_processor'
+  endpoint = 'https://${region}-${project_id}.cloudfunctions.net/edgar_processor'
 )
 ;
 

@@ -1,11 +1,13 @@
 config {
   type: "table",
+  tags: ["3_extract"]
 }
 
 js {
   const dataset_id = dataform.projectConfig.defaultSchema;
 }
 
+pre_operations {
 DECLARE prompt STRING;
 
 SET prompt = '''
@@ -60,7 +62,7 @@ Provide your output in JSON format, as showsn in example below
  "notes": "Any additional information or explanations"
 }
 ''';
-
+}
 
 WITH llm_output AS (
 SELECT

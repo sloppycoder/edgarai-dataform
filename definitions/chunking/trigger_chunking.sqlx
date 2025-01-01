@@ -1,5 +1,6 @@
 config {
-    type:"operations"
+    type:"table",
+    tags: ["2_chunk_filings"]
 }
 
 js {
@@ -8,13 +9,10 @@ js {
 }
 
 SELECT
-  `${dataset_id}`.trigger_processor('chunk_one_filing', '${dataset_id}', param) AS status_message
+  param as parameters, 
+  `${dataset_id}`.edgar_processor('chunk_one_filing', '${dataset_id}', param) AS message
 FROM (
   SELECT DISTINCT cik || '|' || filename AS param
   FROM ${ref("master_idx_sample")}
   LIMIT ${num_of_filings_to_chunk}
-);
-
-js {
-    
-}
+)
