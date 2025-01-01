@@ -1,0 +1,21 @@
+config {
+    type: "assertion",
+}
+
+js {
+    const { getCurrentDatasetId } = require("includes/utils.js")
+    const dataset_id = utils.getCurrentDatasetId();
+}
+
+WITH records_count AS
+(
+  SELECT
+    COUNT(*) AS total
+  FROM
+    `${dataset_id}.master_idx`
+  WHERE
+    form_type = '485BPOS' AND 
+    EXTRACT(YEAR FROM date_filed) = 2024
+)
+
+SELECT * FROM records_count WHERE total = 0
