@@ -77,7 +77,7 @@ FROM
         accession_number,
         REPLACE(prompt,'{SEC_FILING_SNIPPET}',relevant_text) as prompt
       FROM
-        ${ref("trustee_comp_prompt")}
+        ${ref("trustee_comp_prompts")}
     ),
     STRUCT(
       4096 AS max_output_tokens, 
