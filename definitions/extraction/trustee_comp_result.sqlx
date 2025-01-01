@@ -70,7 +70,7 @@ SELECT
   0 AS n_trustees
 FROM
   ML.GENERATE_TEXT(
-    MODEL `edgar2.gemini-flash-15`,
+    MODEL `${dataset_id}.gemini-flash-15`,
     ( 
       SELECT 
         cik,

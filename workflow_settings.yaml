@@ -8,6 +8,6 @@ vars:
   cloud_func_connection: us-central1.cloud-funcs
   vertexai_connection: us-central1.ai1
   # num of companies to sample
-  cik_samples: "10"
+  cik_samples: "20"
   # when set to true, will limit rows in some query to reduce the run time
-  debug: "true"
+  debug: "false"
