@@ -5,7 +5,6 @@ config {
 js {
   const dataset_id = dataform.projectConfig.defaultSchema;
   const limit_clause = dataform.projectConfig.vars.debug === "true" ? " LIMIT 2" : "";
-
 }
 
 WITH filing_list AS (
@@ -27,7 +26,7 @@ most_relevant_chunks_output AS (
 )
 
 -- Step 2: Filter filing_chunked_texts for each cik and accession_number combined the text chunks
-  SELECT 
+  SELECT
     r.cik,
     r.accession_number,
     STRING_AGG(f.content, ' ') AS relevant_text,
