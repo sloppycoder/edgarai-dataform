@@ -1,5 +1,6 @@
 config {
   type: "operations",
+  dependencies: [ "processor_responses" ]
 }
 
 js {
@@ -26,7 +27,7 @@ OPTIONS (
 ;
 
 -- DEFINE remote function for getting most relevant chunk numbers of a filing
-CREATE OR REPLACE FUNCTION `${dataset_id}`.get_most_relevant_chunks(dataset_id STRING, cik STRING, accession_number STRING) 
+CREATE OR REPLACE FUNCTION `${dataset_id}`.get_most_relevant_chunks(dataset_id STRING, cik STRING, accession_number STRING)
 RETURNS STRING
 REMOTE WITH CONNECTION `${func_connection}`
 OPTIONS (
