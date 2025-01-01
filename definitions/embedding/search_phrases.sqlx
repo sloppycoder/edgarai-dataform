@@ -3,15 +3,16 @@ config {
 }
 
 js {
-  const dataset_id = dataform.projectConfig.defaultSchema;
+  const { getCurrentDatasetId } = require("includes/utils.js")
+  const dataset_id = utils.getCurrentDatasetId();
   const dimension = dataform.projectConfig.vars.embedding_dimensionality;
 }
-SELECT 
+SELECT
   *
 FROM ML.GENERATE_EMBEDDING (
   MODEL  `${dataset_id}.text-embedding`,
   (
-    SELECT content 
+    SELECT content
     FROM UNNEST([
         'Trustee Compensation',
         'Independent Director Compensation',

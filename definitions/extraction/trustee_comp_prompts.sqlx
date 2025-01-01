@@ -3,7 +3,8 @@ config {
 }
 
 js {
-  const dataset_id = dataform.projectConfig.defaultSchema;
+  const { getCurrentDatasetId } = require("includes/utils.js")
+  const dataset_id = utils.getCurrentDatasetId();
   const limit_clause = dataform.projectConfig.vars.debug === "true" ? " LIMIT 2" : "";
 }
 

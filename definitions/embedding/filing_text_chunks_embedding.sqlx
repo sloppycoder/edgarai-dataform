@@ -4,17 +4,18 @@ config {
 }
 
 js {
-  const dataset_id = dataform.projectConfig.defaultSchema;
+  const { getCurrentDatasetId } = require("includes/utils.js")
+  const dataset_id = utils.getCurrentDatasetId();
   const dimension = dataform.projectConfig.vars.embedding_dimensionality;
 }
 
-SELECT 
+SELECT
   *,
   'text-embedding-005/768/round1' AS tags
 FROM ML.GENERATE_EMBEDDING (
   MODEL  `${dataset_id}.text-embedding`,
   (
-    SELECT cik, accession_number, chunk_num, content 
+    SELECT cik, accession_number, chunk_num, content
     FROM `${dataset_id}.filing_text_chunks`
   ),
   STRUCT(

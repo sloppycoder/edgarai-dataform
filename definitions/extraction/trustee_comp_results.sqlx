@@ -4,7 +4,8 @@ config {
 }
 
 js {
-  const dataset_id = dataform.projectConfig.defaultSchema;
+  const { getCurrentDatasetId } = require("includes/utils.js")
+  const dataset_id = utils.getCurrentDatasetId();
 }
 
 pre_operations {
@@ -71,8 +72,8 @@ SELECT
 FROM
   ML.GENERATE_TEXT(
     MODEL `${dataset_id}.gemini-flash-15`,
-    ( 
-      SELECT 
+    (
+      SELECT
         cik,
         accession_number,
         REPLACE(prompt,'{SEC_FILING_SNIPPET}',relevant_text) as prompt
@@ -80,7 +81,7 @@ FROM
         ${ref("trustee_comp_prompts")}
     ),
     STRUCT(
-      4096 AS max_output_tokens, 
+      4096 AS max_output_tokens,
       0 AS temperature,
       TRUE AS flatten_json_output
     )
@@ -88,18 +89,18 @@ FROM
 ),
 
 -- the LLM returns the json with in a markdown block. so we remove the wrapping first
-llm_json_output AS 
+llm_json_output AS
 (
-  SELECT 
+  SELECT
     *,
     REGEXP_REPLACE(
-        ml_generate_text_llm_result, 
+        ml_generate_text_llm_result,
         r'(?s)```json\s*(\{.*?\})\s*```', '\\1'
       ) as json_text
   FROM llm_output
 )
 
-SELECT 
+SELECT
   cik,
   accession_number,
   json_text,

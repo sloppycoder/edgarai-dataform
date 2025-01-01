@@ -5,7 +5,8 @@ config {
 }
 
 js {
-  const dataset_id = dataform.projectConfig.defaultSchema;
+  const { getCurrentDatasetId } = require("includes/utils.js")
+  const dataset_id = utils.getCurrentDatasetId();
   const limit_clause = dataform.projectConfig.vars.debug === "true" ? " LIMIT 2" : "";
 }
 
@@ -22,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `${dataset_id}.master_idx` (
 
 }
 
-SELECT 
+SELECT
    param AS parameters,
    `${dataset_id}`.trigger_processor('load_master_idx', '${dataset_id}', param) AS message
 FROM

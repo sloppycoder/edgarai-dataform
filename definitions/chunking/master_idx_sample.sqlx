@@ -3,7 +3,8 @@ config {
 }
 
 js {
-  const dataset_id = dataform.projectConfig.defaultSchema;
+  const { getCurrentDatasetId } = require("includes/utils.js")
+  const dataset_id = utils.getCurrentDatasetId();
   const chunk_filings = dataform.projectConfig.vars.chunk_filings;
   const cik_samples = dataform.projectConfig.vars.cik_samples;
 }

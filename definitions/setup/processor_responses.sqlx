@@ -3,13 +3,13 @@ config {
 }
 
 js {
-  const dataset_id = dataform.projectConfig.defaultSchema;
+  const region = dataform.projectConfig.defaultLocation
 }
 
 -- create table before creating the view
 pre_operations {
 
-CREATE SCHEMA IF NOT EXISTS `common`;
+CREATE SCHEMA IF NOT EXISTS `common` OPTIONS(location="${region}");
 
 -- REQUIRED by pub/sub to store messages
 CREATE TABLE IF NOT EXISTS `common.topic_edgarai_response`
@@ -23,10 +23,10 @@ CREATE TABLE IF NOT EXISTS `common.topic_edgarai_response`
 
 }
 
-SELECT 
+SELECT
   response.*,
   JSON_EXTRACT(data, '$.message') AS message,
-  JSON_EXTRACT_SCALAR(data, '$.status') AS status, 
+  JSON_EXTRACT_SCALAR(data, '$.status') AS status,
   REGEXP_EXTRACT(JSON_EXTRACT(data, '$.message'), r'saved for ([0-9]+)') AS cik,
   REGEXP_EXTRACT(JSON_EXTRACT(data, '$.message'), r'edgar.*txt') AS filename,
   REGEXP_EXTRACT(JSON_EXTRACT(data, '$.message'), r'^"([0-9]+)') AS n_chunks
