@@ -1,0 +1,14 @@
+config {
+    type: "operations",
+    tags: ["testing"]
+}
+
+js {
+    const {
+        getCurrentDatasetId
+    } = require("includes/utils.js")
+    const dataset_id = utils.getCurrentDatasetId();
+}
+
+SELECT
+  'dataset_id is ' || '${dataset_id}' AS message;

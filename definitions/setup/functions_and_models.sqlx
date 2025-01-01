@@ -4,12 +4,17 @@ config {
 }
 
 js {
+  const { getCurrentDatasetId } = require("includes/utils.js")
+  const dataset_id = utils.getCurrentDatasetId();
+  console.log(`dataset_id is ${dataset_id}`)
+  
   const project_id = dataform.projectConfig.defaultDatabase
-  const dataset_id = dataform.projectConfig.defaultSchema;
   const region = dataform.projectConfig.defaultLocation
   const func_connection = dataform.projectConfig.vars.cloud_func_connection
   const vertexai_connection = dataform.projectConfig.vars.vertexai_connection
 }
+
+SELECT 'dataset_id is ' || '${dataset_id}' AS message;
 
 CREATE SCHEMA IF NOT EXISTS `${dataset_id}`;
 
