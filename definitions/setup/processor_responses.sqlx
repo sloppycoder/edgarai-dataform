@@ -9,6 +9,8 @@ js {
 -- create table before creating the view
 pre_operations {
 
+CREATE SCHEMA IF NOT EXISTS `common`;
+
 -- REQUIRED by pub/sub to store messages
 CREATE TABLE IF NOT EXISTS `common.topic_edgarai_response`
 (

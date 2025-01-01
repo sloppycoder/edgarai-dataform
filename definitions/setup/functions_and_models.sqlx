@@ -19,10 +19,10 @@ CREATE SCHEMA IF NOT EXISTS `${dataset_id}`;
 --
 
 -- DEFINE remote function to trigger edgar_processor
-CREATE OR REPLACE FUNCTION `${dataset_id}`.edgar_processor(func_name STRING,dataset_id STRING, params STRING) RETURNS STRING
+CREATE OR REPLACE FUNCTION `${dataset_id}`.trigger_processor(func_name STRING,dataset_id STRING, params STRING) RETURNS STRING
 REMOTE WITH CONNECTION `${func_connection}`
 OPTIONS (
-  endpoint = 'https://${region}-${project_id}.cloudfunctions.net/edgar_processor'
+  endpoint = 'https://${region}-${project_id}.cloudfunctions.net/trigger_processor'
 )
 ;
 

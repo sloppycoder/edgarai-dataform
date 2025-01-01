@@ -10,7 +10,7 @@ js {
 
 SELECT
   param as parameters,
-  `${dataset_id}`.edgar_processor('chunk_one_filing', '${dataset_id}', param) AS message
+  `${dataset_id}`.trigger_processor('chunk_one_filing', '${dataset_id}', param) AS message
 FROM (
   SELECT DISTINCT cik || '|' || filename AS param
   FROM ${ref("master_idx_sample")}
