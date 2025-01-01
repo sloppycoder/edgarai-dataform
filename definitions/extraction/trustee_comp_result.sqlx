@@ -87,6 +87,7 @@ FROM
   )
 ),
 
+-- the LLM returns the json with in a markdown block. so we remove the wrapping first
 llm_json_output AS 
 (
   SELECT 
