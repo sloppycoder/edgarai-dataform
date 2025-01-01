@@ -12,3 +12,5 @@ vars:
   # number of filings to chunk, set to large number
   # in order to chunk all filings from the sampled companies
   num_of_filings_to_chunk: "2"
+  # when set to true, will limit rows in some query to reduce the run time
+  debug: "true"

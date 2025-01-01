@@ -4,12 +4,14 @@ config {
 
 js {
   const dataset_id = dataform.projectConfig.defaultSchema;
+  const limit_clause = dataform.projectConfig.vars.debug === "true" ? " LIMIT 2" : "";
+
 }
 
 WITH filing_list AS (
   SELECT distinct cik, accession_number
   FROM ${ref("filing_text_chunks_embedding")}
-  limit 2 -- TODO: remove after debugging
+  ${limit_clause}
 ),
 
 -- Step 1: Call the remote function that returns a JSON string (list of integers)
