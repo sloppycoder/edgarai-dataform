@@ -1,0 +1,18 @@
+config {
+    type: "assertion",
+}
+
+js {
+    const { getCurrentDatasetId } = require("includes/utils.js")
+    const dataset_id = utils.getCurrentDatasetId();
+}
+
+SELECT 
+  * 
+FROM `${dataset_id}.master_idx_sample` idx
+WHERE NOT EXISTS (
+  SELECT cik FROM `${dataset_id}.filing_text_chunks`
+  WHERE 
+  cik = idx.cik AND accession_number = idx.accession_number
+)
+

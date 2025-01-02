@@ -1,6 +1,6 @@
 config {
     type: "table",
-    dependencies: ["search_phrases"]
+    dependencies: ["search_phrases", "check_text_chunks"]
 }
 
 js {
