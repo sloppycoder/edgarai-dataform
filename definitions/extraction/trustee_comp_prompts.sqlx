@@ -30,6 +30,7 @@ most_relevant_chunks_output AS (
   SELECT
     r.cik,
     r.accession_number,
+    STRING_AGG(CAST(f.chunk_num  AS STRING), ',') AS chunk_nums,
     STRING_AGG(f.content, ' ') AS relevant_text,
   FROM most_relevant_chunks_output r
   JOIN ${ref("filing_text_chunks_embedding")} f

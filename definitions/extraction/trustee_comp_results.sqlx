@@ -76,6 +76,7 @@ FROM
       SELECT
         cik,
         accession_number,
+        chunk_nums,
         REPLACE(prompt,'{SEC_FILING_SNIPPET}',relevant_text) as prompt
       FROM
         ${ref("trustee_comp_prompts")}
@@ -103,6 +104,7 @@ llm_json_output AS
 SELECT
   cik,
   accession_number,
+  chunk_nums,
   json_text,
   JSON_EXTRACT(json_text ,'$.compensation_info_present') AS found,
   ARRAY_LENGTH(JSON_EXTRACT_ARRAY(json_text ,'$.trustees')) AS n_trustee
