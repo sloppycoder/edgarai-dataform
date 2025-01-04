@@ -11,7 +11,7 @@ js {
 
 pre_operations {
   
-  CREATE TABLE IF NOT EXISTS `${dataset_id}.filing_text_chunks` (
+  CREATE OR REPLACE TABLE `${dataset_id}.filing_text_chunks` (
     cik STRING(10) NOT NULL,
     date_filed DATE NOT NULL,
     accession_number STRING(20) NOT NULL,

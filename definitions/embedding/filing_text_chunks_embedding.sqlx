@@ -1,6 +1,6 @@
 config {
     type: "table",
-    dependencies: ["search_phrases", "check_text_chunks"]
+    dependencies: ["search_phrases", "check_text_chunks"],
 }
 
 js {
@@ -24,3 +24,13 @@ FROM ML.GENERATE_EMBEDDING (
     'RETRIEVAL_DOCUMENT' AS task_type
   )
 )
+
+post_operations {
+      CREATE VECTOR INDEX IF NOT EXISTS embedding_index 
+      ON ${self()} (ml_generate_embedding_result) 
+      OPTIONS (
+        index_type = "TREE_AH",
+        distance_type = "COSINE",
+        tree_ah_options = '{"leaf_node_embedding_count": 500 }'
+      )
+}
