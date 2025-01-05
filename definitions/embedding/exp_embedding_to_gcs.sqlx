@@ -1,0 +1,33 @@
+config {
+    type: "operations",
+    tags: ["4_export_embedding"]
+}
+
+js {
+  const { getCurrentDatasetId, getCurrentTimestamp } = require("includes/utils.js")
+  const dataset_id = utils.getCurrentDatasetId();
+  const exp_prefix = dataform.projectConfig.vars.json_export_prefix;
+  const timestamp = getCurrentTimestamp();
+}
+
+EXPORT DATA
+  OPTIONS(
+    uri='${exp_prefix}/${dataset_id}_text_chunks_${timestamp}-*.json',
+    format='JSON',
+    overwrite=true
+  )
+AS
+SELECT cik,accession_number, content 
+FROM ${ref("filing_text_chunks_embedding")}
+;
+
+EXPORT DATA
+  OPTIONS(
+    uri='${exp_prefix}/${dataset_id}_embedding_chunks_${timestamp}-*.json',
+    format='JSON',
+    overwrite=true
+  )
+AS
+SELECT cik,accession_number, content 
+FROM ${ref("filing_text_chunks_embedding")}
+;

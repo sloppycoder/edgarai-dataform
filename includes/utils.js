@@ -15,6 +15,11 @@ function getCurrentDatasetId() {
     return `${defaultSchema}_${suffix}`;
 }
 
+function getCurrentTimestamp() {
+    return new Date().toISOString().replaceAll("-","").replaceAll(".","").replaceAll(":","")
+}
+
 module.exports = {
-    getCurrentDatasetId
+    getCurrentDatasetId, 
+    getCurrentTimestamp
 };
