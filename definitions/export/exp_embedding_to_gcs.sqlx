@@ -52,3 +52,16 @@ SELECT
   ml_generate_embedding_result as phrase_embedding 
 FROM ${ref("search_phrases")}
 ;
+
+EXPORT DATA
+  OPTIONS(
+    uri='${exp_prefix}/${dataset_id}_trustee_comp_results_*.json',
+    format='JSON',
+    compression='NONE',
+    overwrite=true
+  )
+AS
+SELECT 
+  cik, accession_number, chunk_nums, model_response, n_trustee 
+FROM ${ref("trustee_comp_results")}
+;
