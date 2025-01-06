@@ -7,27 +7,48 @@ js {
   const { getCurrentDatasetId, getCurrentTimestamp } = require("includes/utils.js")
   const dataset_id = utils.getCurrentDatasetId();
   const exp_prefix = dataform.projectConfig.vars.json_export_prefix;
-  const timestamp = getCurrentTimestamp();
 }
 
 EXPORT DATA
   OPTIONS(
-    uri='${exp_prefix}/${dataset_id}_text_chunks_${timestamp}-*.json',
+    uri='${exp_prefix}/${dataset_id}_text_chunks_*.json',
     format='JSON',
     overwrite=true
   )
 AS
-SELECT cik,accession_number, content 
+SELECT 
+  cik,
+  accession_number, 
+  chunk_num,
+  content AS chunk_text
 FROM ${ref("filing_text_chunks_embedding")}
 ;
 
 EXPORT DATA
   OPTIONS(
-    uri='${exp_prefix}/${dataset_id}_embedding_chunks_${timestamp}-*.json',
+    uri='${exp_prefix}/${dataset_id}_text_chunks_embedding_*.json',
     format='JSON',
     overwrite=true
   )
 AS
-SELECT cik,accession_number, content 
+SELECT 
+  cik,
+  accession_number, 
+  chunk_num,
+  ml_generate_embedding_result AS embedding 
 FROM ${ref("filing_text_chunks_embedding")}
+;
+
+EXPORT DATA
+  OPTIONS(
+    uri='${exp_prefix}/${dataset_id}_search_phrases_*.json',
+    format='JSON',
+    compression='NONE',
+    overwrite=true
+  )
+AS
+SELECT 
+  content AS phrase, 
+  ml_generate_embedding_result as phrase_embedding 
+FROM ${ref("search_phrases")}
 ;
